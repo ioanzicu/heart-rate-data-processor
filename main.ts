@@ -1,3 +1,13 @@
+import {
+  HeartRateSamples,
+  HeartRateSamplesOutput,
+  Laps,
+  LapsOutput,
+  Output,
+  Summary,
+  SummaryOutput
+} from "./types.ts"
+
 function summaryProcessor(data: Summary): SummaryOutput {
   return {
     userId: data.userId,
@@ -20,7 +30,7 @@ function lapsProcessor(data: Laps): LapsOutput {
   return laps;
 }
 
-const HEAR_RATE_SAMPLE_TYPE = "2"
+const HEAR_RATE_SAMPLE_TYPE = "2";
 
 function heartRateSamplesDataProcessor(
   data: HeartRateSamples

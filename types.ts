@@ -58,3 +58,13 @@ type Output = P[];
 type P = LapOutput & {
   heartRateSamples: HeartRateSampleOutput[];
 };
+
+export {
+  Summary,
+  SummaryOutput,
+  Laps,
+  LapsOutput,
+  HeartRateSamples,
+  HeartRateSamplesOutput,
+  Output
+}
