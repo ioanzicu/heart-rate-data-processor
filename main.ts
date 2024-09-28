@@ -6,8 +6,8 @@ import {
   LapsOutput,
   Output,
   Summary,
-  SummaryOutput
-} from "./types.ts"
+  SummaryOutput,
+} from "./types.ts";
 
 function summaryProcessor(data: Summary): SummaryOutput {
   return {
@@ -73,8 +73,6 @@ function processSamplesOutput(
   return output;
 }
 
-
-
 class DataProcessor {
   readonly HEAR_RATE_SAMPLE_TYPE: string = "2";
 
@@ -112,24 +110,27 @@ class DataProcessor {
   // Load Samples
   loadHeartRateSamplesDataProcessor(data: HeartRateSamples): this {
     const heartRateSamples = [];
-    for (let i = 0; i < data.length; ) {
+    for (let i = 0; i < data.length; i++) {
       if (data[i]["sample-type"] === HEAR_RATE_SAMPLE_TYPE) {
-        const sample = [
-          {
-            sampleIndex: i,
-            heartRate: data[i].data,
-          },
-        ];
-        i++;
+        const sample = [];
         sample.push({
           sampleIndex: i,
           heartRate: data[i].data,
         });
+
         i++;
+
+        if (
+          i < data.length &&
+          data[i]["sample-type"] === HEAR_RATE_SAMPLE_TYPE
+        ) {
+          sample.push({
+            sampleIndex: i,
+            heartRate: data[i].data,
+          });
+        }
         heartRateSamples.push(sample);
-        continue;
       }
-      i++;
     }
     this.heartRateSampleData = heartRateSamples;
     this.processSamplesOutput();
@@ -137,7 +138,7 @@ class DataProcessor {
   }
 
   private processSamplesOutput(): void {
-    this.output = zip(this.lapsData, this.heartRateSampleData)
+    this.output = zip(this.lapsData, this.heartRateSampleData);
   }
 
   build(): this | never {
@@ -146,7 +147,9 @@ class DataProcessor {
         "summaryData was not loaded, please use loadSummaryData method"
       );
     } else if (!this.lapsData) {
-      throw new Error("lapsData was not loaded, please use loadLapsData method");
+      throw new Error(
+        "lapsData was not loaded, please use loadLapsData method"
+      );
     } else if (!this.heartRateSampleData) {
       throw new Error(
         "heartRateSampleData was not loaded, please use loadHeartRateSamplesDataProcessor method"
