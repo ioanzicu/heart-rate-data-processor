@@ -287,6 +287,11 @@ describe("method DataProcessor.loadHeartRateSamplesDataProcessor", () => {
         "sample-type": "3",
         data: "143,87,88,88,88,90,91",
       },
+      {
+        "recording-rate": 5,
+        "sample-type": "2",
+        data: "182,170,188,181,174,172,158",
+      },
     ];
 
     const obj = new DataProcessor();
@@ -298,6 +303,7 @@ describe("method DataProcessor.loadHeartRateSamplesDataProcessor", () => {
     const expected = [
       [{ heartRate: "120,126,122,140,142,155,145", sampleIndex: 1 }],
       [{ heartRate: "182,170,188,181,174,172,158", sampleIndex: 6 }],
+      [{ heartRate: "182,170,188,181,174,172,158", sampleIndex: 8 }],
     ];
     expect(actual).toEqual(expected);
   });
