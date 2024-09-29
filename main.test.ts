@@ -1,9 +1,18 @@
 import { DataProcessor } from "./main.ts";
 import zip from "./privateFunctions.ts";
+import {
+  HeartRateSamples,
+  HeartRateSamplesOutput,
+  Laps,
+  LapsOutput,
+  Output,
+  Summary,
+  SummaryOutput,
+} from "./types.ts";
 
 describe("method DataProcessor.loadSummaryData", () => {
   test("happy path", () => {
-    const given = {
+    const given: Summary = {
       userId: "1234567890",
       activityId: 9480958402,
       activityName: "Indoor Cycling",
@@ -21,7 +30,7 @@ describe("method DataProcessor.loadSummaryData", () => {
     obj.loadSummaryData(given);
     const actual = obj["summaryData"];
 
-    const expected = {
+    const expected: SummaryOutput = {
       userId: "1234567890",
       activityType: "INDOOR_CYCLING",
       deviceName: "instinct2",
@@ -35,7 +44,7 @@ describe("method DataProcessor.loadSummaryData", () => {
 
 describe("method DataProcessor.lapsProcessor", () => {
   test("happy path", () => {
-    const given = [
+    const given: Laps = [
       {
         startTimeInSeconds: 1661158927,
         airTemperatureCelsius: 28,
@@ -56,7 +65,7 @@ describe("method DataProcessor.lapsProcessor", () => {
     obj.loadLapsData(given);
     const actual = obj["lapsData"];
 
-    const expected = [
+    const expected: LapsOutput = [
       {
         startTimeInSeconds: 1661158927,
         distanceInMeters: 15,
@@ -75,7 +84,7 @@ describe("method DataProcessor.lapsProcessor", () => {
 
 describe("zip function for private method DataProcessor.processSamplesOutput", () => {
   test("happy path", () => {
-    const given1 = [
+    const given1: LapsOutput = [
       {
         startTimeInSeconds: 1661158927,
         distanceInMeters: 15,
@@ -88,7 +97,7 @@ describe("zip function for private method DataProcessor.processSamplesOutput", (
       },
     ];
 
-    const given2 = [
+    const given2: HeartRateSamplesOutput = [
       [
         {
           sampleIndex: 1,
@@ -113,7 +122,7 @@ describe("zip function for private method DataProcessor.processSamplesOutput", (
 
     const actual = zip(given1, given2);
 
-    const expected = [
+    const expected: Output = [
       {
         startTimeInSeconds: 1661158927,
         distanceInMeters: 15,
@@ -151,7 +160,7 @@ describe("zip function for private method DataProcessor.processSamplesOutput", (
 });
 
 describe("method DataProcessor.loadHeartRateSamplesDataProcessor", () => {
-  const given1 = {
+  const given1: Summary = {
     userId: "1234567890",
     activityId: 9480958402,
     activityName: "Indoor Cycling",
@@ -165,7 +174,7 @@ describe("method DataProcessor.loadHeartRateSamplesDataProcessor", () => {
     maxHeartRateInBeatsPerMinute: 190,
   };
 
-  const given2 = [
+  const given2: Laps = [
     {
       startTimeInSeconds: 1661158927,
       airTemperatureCelsius: 28,
@@ -183,7 +192,7 @@ describe("method DataProcessor.loadHeartRateSamplesDataProcessor", () => {
   ];
 
   test("happy path", () => {
-    const given3 = [
+    const given3: HeartRateSamples = [
       {
         "recording-rate": 5,
         "sample-type": "0",
@@ -246,7 +255,7 @@ describe("method DataProcessor.loadHeartRateSamplesDataProcessor", () => {
   });
 
   test("not two HEAR_RATE_SAMPLE_TYPE sequential objects", () => {
-    const given3 = [
+    const given3: HeartRateSamples = [
       {
         "recording-rate": 5,
         "sample-type": "0",
@@ -300,17 +309,36 @@ describe("method DataProcessor.loadHeartRateSamplesDataProcessor", () => {
     obj.loadHeartRateSamplesDataProcessor(given3);
     const actual = obj["heartRateSampleData"];
 
-    const expected = [
+    const expected: HeartRateSamplesOutput = [
       [{ heartRate: "120,126,122,140,142,155,145", sampleIndex: 1 }],
       [{ heartRate: "182,170,188,181,174,172,158", sampleIndex: 6 }],
       [{ heartRate: "182,170,188,181,174,172,158", sampleIndex: 8 }],
     ];
     expect(actual).toEqual(expected);
   });
+
+  test("not HEAR_RATE_SAMPLE_TYPE objects", () => {
+    const given3: HeartRateSamples = [
+      {
+        "recording-rate": 5,
+        "sample-type": "0",
+        data: "86,87,88,88,88,90,91",
+      },
+    ];
+
+    const obj = new DataProcessor();
+    obj.loadSummaryData(given1);
+    obj.loadLapsData(given2);
+    obj.loadHeartRateSamplesDataProcessor(given3);
+    const actual = obj["heartRateSampleData"];
+
+    const expected: HeartRateSamplesOutput = [];
+    expect(actual).toEqual(expected);
+  });
 });
 
 describe("method DataProcessor.build", () => {
-  const given1 = {
+  const given1: Summary = {
     userId: "1234567890",
     activityId: 9480958402,
     activityName: "Indoor Cycling",
@@ -324,7 +352,7 @@ describe("method DataProcessor.build", () => {
     maxHeartRateInBeatsPerMinute: 190,
   };
 
-  const given2 = [
+  const given2: Laps = [
     {
       startTimeInSeconds: 1661158927,
       airTemperatureCelsius: 28,
